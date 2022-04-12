@@ -20,7 +20,8 @@
   },
   "homepage": "https://github.com/mld-njupt/three-load-gltf#readme",
   "dependencies": {
-    "three": "^0.139.2"
+    "three": "^0.139.2",
+    "three-orbitcontrols": "^2.110.3"
   },
   "devDependencies": {
     "css-loader": "^6.7.1",
