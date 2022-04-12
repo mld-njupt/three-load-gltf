@@ -1,7 +1,9 @@
 import * as THREE from "three";
+import axisStyle from "../axis.json";
 import OrbitControls from "three-orbitcontrols";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import "./index.css";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 
 //初始化一个three.js场景
 function ThreeScene(
@@ -39,21 +41,20 @@ function ThreeScene(
   this.controls = new OrbitControls(this.camera, this.renderer.domElement);
   this.clock = new THREE.Clock();
   this.gltfLoader = new GLTFLoader();
+  this.fontLoader = new FontLoader();
   this.url =
     // eslint-disable-next-line no-undef
     process.env.NODE_ENV === "development"
       ? "/api/react/Model.gltf"
       : "http://103.118.40.123:9999/react/Model.gltf";
 }
-ThreeScene.prototype.render = 
- function () {
-    //获取时间差
-    const elta = this.clock.getDelta();
-    this.controls.update(elta);
-    requestAnimationFrame(this.render.bind(this));
-    this.renderer.render(this.scene, this.camera);
-  }
-
+ThreeScene.prototype.render = function () {
+  //获取时间差
+  const elta = this.clock.getDelta();
+  this.controls.update(elta);
+  requestAnimationFrame(this.render.bind(this));
+  this.renderer.render(this.scene, this.camera);
+};
 
 //组合继承
 function inheritPrototype(subClass, superClass) {
@@ -81,14 +82,54 @@ function MainScene(
 inheritPrototype(MainScene, ThreeScene);
 MainScene.prototype.loadGLTF = function () {
   const _this = this;
-  console.log(this)
   this.gltfLoader.load(this.url, function (gltf) {
     _this.scene.add(gltf.scene);
     _this.render();
   });
 };
 
+function AxisScene(
+  cameraPosition,
+  cameraLight,
+  sceneLight,
+  rendererSize,
+  elementId
+) {
+  ThreeScene.call(
+    this,
+    cameraPosition,
+    cameraLight,
+    sceneLight,
+    rendererSize,
+    elementId
+  );
+}
+inheritPrototype(MainScene, AxisScene);
+AxisScene.prototype.loadFONT = function () {
+  const _this = this;
+  this.fontLoader.load(axisStyle, function (font) {
+    const geometry = new THREE.TextGeometry("N", {
+      //“N是要加载的字”
+      font: font,
+      size: 5,
+      height: 2,
+      curveSegments: 0.1,
+      bevelEnabled: true,
+      bevelThickness: 0.1,
+      bevelSize: 0.1,
+      bevelOffset: 0,
+      bevelSegments: 1,
+    });
+    const fontMaterial = new THREE.MeshLambertMaterial({
+      color: 0xeb4334,
+    });
+    const fontModel = new THREE.Mesh(geometry, fontMaterial);
+    fontModel.position.x = -2; //调整一下N的位置
 
+    _this.scene.add(fontModel);
+    _this.render();
+  });
+};
 const mainScene = new ThreeScene(
   { x: 0, y: 0, z: 200 },
   new THREE.PointLight(0xffffff, 1),
@@ -97,6 +138,14 @@ const mainScene = new ThreeScene(
   "main-wrap"
 );
 mainScene.loadGLTF();
+const axisScene = new AxisScene(
+  { x: 30, y: 50, z: 100 },
+  new THREE.PointLight(0xffffff, 1),
+  new THREE.AmbientLight(0x222222),
+  1,
+  "axis-wrap"
+);
+axisScene.loadFONT();
 // //初始化主容器
 
 // //PerspectiveCamera透视投影相机
