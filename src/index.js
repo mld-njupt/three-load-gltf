@@ -142,7 +142,7 @@ const axisScene = new AxisScene(
   { x: 30, y: 50, z: 100 },
   new THREE.PointLight(0xffffff, 1),
   new THREE.AmbientLight(0x222222),
-  1,
+  5,
   "axis-wrap"
 );
 axisScene.loadFONT();
