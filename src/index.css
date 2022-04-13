@@ -1,21 +1,23 @@
-body,html{
+body, html {
     width: 100%;
     height: 100%;
     position: relative;
     margin: 0;
 }
-.main-wrap{
+
+#main-wrap {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
 }
-.axis-wrap{
+
+#axis-wrap {
     position: absolute;
     top: 0;
     left: 0;
     width: 200px;
-    height: 100px;
+    height: 200px;
 
 }
