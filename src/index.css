@@ -19,5 +19,29 @@ body, html {
     left: 0;
     width: 200px;
     height: 200px;
-
 }
+#control-wrap{
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 260px;
+    height: 100%;
+    background-color: rgb(244, 241, 237);
+}
+#line-wrap{
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.switch{
+    margin-left: 50px
+}
+.switch-span{
+    font-size: 14px;
+    line-height: 14px;
+    font-weight: 700;
+    color: #409EFF;
+    margin-left: 20px;
+}
+

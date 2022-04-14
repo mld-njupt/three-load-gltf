@@ -2,8 +2,19 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
-import "./index.css";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
+import inheritPrototype from "./inheritPrototype";
+import { CreateControl, CreateLine, CreateSpan, CreateSwitch} from "./control";
+import "./index.css";
+import "./control.css"
+const controlWrap=new CreateControl("control-wrap",document.body,true)
+controlWrap.init()
+const lineWrap=new CreateLine("line-wrap",controlWrap.element)
+lineWrap.init()
+const spanWrap=new CreateSpan()
+spanWrap.init("01：",lineWrap.element)
+const switchWrap=new CreateSwitch(true)
+switchWrap.init(lineWrap.element)
 
 //初始化一个three.js场景
 function ThreeScene(
@@ -50,12 +61,6 @@ ThreeScene.prototype.render = function () {
 };
 
 //组合继承
-function inheritPrototype(subClass, superClass) {
-  function F() {}
-  F.prototype = superClass.prototype;
-  subClass.prototype = new F();
-  subClass.prototype.constructor = subClass;
-}
 function MainScene(
   cameraPosition,
   cameraLight,
