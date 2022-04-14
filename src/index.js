@@ -4,17 +4,68 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import inheritPrototype from "./inheritPrototype";
-import { CreateControl, CreateLine, CreateSpan, CreateSwitch} from "./control";
+import {
+  CreateControl,
+  CreateController,
+} from "./control";
 import "./index.css";
-import "./control.css"
-const controlWrap=new CreateControl("control-wrap",document.body,true)
-controlWrap.init()
-const lineWrap=new CreateLine("line-wrap",controlWrap.element)
-lineWrap.init()
-const spanWrap=new CreateSpan()
-spanWrap.init("01：",lineWrap.element)
-const switchWrap=new CreateSwitch(true)
-switchWrap.init(lineWrap.element)
+import "./control.css";
+
+let _switchState ={
+  0: true,
+  1: true,
+  2: true,
+  3: true,
+  4: true,
+  5: true,
+  6: true,
+  7: true,
+  8: true,
+  9: true,
+  10: true,
+  11: true,
+  12: true,
+  13: true,
+  14: true,
+  15: true,
+  16: true,
+  17: true,
+  18: true,
+  19: true,
+  20: true,
+  21: true,
+  22: true,
+  23: true,
+  24: true,
+  25: true,
+  26: true,
+  27: true,
+  all: false,
+};
+let switchState=new Proxy(_switchState,{
+  set(obj, key, value) {
+    obj[key] = value;
+    return true
+
+  }
+})
+const handleSwitch = (no) => {
+  return (...args) => {
+   switchState[no]=args[0].target.checked
+  };
+};
+const controlWrap = new CreateControl("control-wrap", document.body, true);
+controlWrap.init();
+
+Object.entries(switchState).map((value) => {
+  // eslint-disable-next-line no-unused-vars
+  const controller = new CreateController(
+    controlWrap.element,
+    value[0],
+    value[1],
+    handleSwitch(value[0])
+  );
+});
 
 //初始化一个three.js场景
 function ThreeScene(
@@ -160,17 +211,19 @@ AxisScene.prototype.loadFONT = function () {
 AxisScene.prototype.render = function (mainControls) {
   requestAnimationFrame(this.render.bind(this, mainControls));
   //让场景二的三个箭头随着场景一的相机旋转情况旋转
-  this.arrowHelper1.rotation.y = -mainControls.getAzimuthalAngle();
-  this.arrowHelper1.rotation.x = -mainControls.getPolarAngle();
-  this.arrowHelper2.rotation.x = -mainControls.getPolarAngle();
-  this.arrowHelper3.rotation.z = mainControls.getAzimuthalAngle();
-  this.arrowHelper3.rotation.x = 1.57079637 - mainControls.getPolarAngle();
-  /* fontModel是N，让它随着arrowHelper3转动而转动
-   */
-  this.fontModel.rotation.x = -(mainControls.getPolarAngle() - 1.57079637);
-  this.fontModel.position.z = -23 * Math.sin(mainControls.getPolarAngle());
-  this.fontModel.position.y = 23 * Math.cos(mainControls.getPolarAngle());
-  this.renderer.render(this.scene, this.camera);
+  if (this.fontModel) {
+    this.arrowHelper1.rotation.y = -mainControls.getAzimuthalAngle();
+    this.arrowHelper1.rotation.x = -mainControls.getPolarAngle();
+    this.arrowHelper2.rotation.x = -mainControls.getPolarAngle();
+    this.arrowHelper3.rotation.z = mainControls.getAzimuthalAngle();
+    this.arrowHelper3.rotation.x = 1.57079637 - mainControls.getPolarAngle();
+    /* fontModel是N，让它随着arrowHelper3转动而转动
+     */
+    this.fontModel.rotation.x = -(mainControls.getPolarAngle() - 1.57079637);
+    this.fontModel.position.z = -23 * Math.sin(mainControls.getPolarAngle());
+    this.fontModel.position.y = 23 * Math.cos(mainControls.getPolarAngle());
+    this.renderer.render(this.scene, this.camera);
+  }
 };
 const mainScene = new MainScene(
   { x: 0, y: 0, z: 200 },

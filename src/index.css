@@ -21,6 +21,8 @@ body, html {
     height: 200px;
 }
 #control-wrap{
+    display: flex;
+    flex-direction: column;
     z-index: 100;
     position: absolute;
     top: 0;
@@ -38,9 +40,12 @@ body, html {
     margin-left: 50px
 }
 .switch-span{
+    letter-spacing: 2px;
+    width: 40px;
     font-size: 14px;
     line-height: 14px;
     font-weight: 700;
+    font-family: 'Times New Roman', Times, serif;
     color: #409EFF;
     margin-left: 20px;
 }

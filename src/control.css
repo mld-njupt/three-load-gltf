@@ -32,6 +32,6 @@
     transition: .6s;
 }
 .switch:checked::before {
-    left: 19.5px;
+    left: 18.5px;
     transition: .3s;
 }
