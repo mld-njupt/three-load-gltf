@@ -4,14 +4,11 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import inheritPrototype from "./inheritPrototype";
-import {
-  CreateControl,
-  CreateController,
-} from "./control";
+import { CreateControl, CreateController } from "./control";
 import "./index.css";
 import "./control.css";
 
-let _switchState ={
+let _switchState = {
   0: true,
   1: true,
   2: true,
@@ -42,16 +39,19 @@ let _switchState ={
   27: true,
   all: false,
 };
-let switchState=new Proxy(_switchState,{
+let switchState = new Proxy(_switchState, {
   set(obj, key, value) {
     obj[key] = value;
-    return true
+    if (mainScene) {
+      mainScene.render();
+    }
 
-  }
-})
+    return true;
+  },
+});
 const handleSwitch = (no) => {
   return (...args) => {
-   switchState[no]=args[0].target.checked
+    switchState[no] = args[0].target.checked;
   };
 };
 const controlWrap = new CreateControl("control-wrap", document.body, true);
@@ -104,6 +104,26 @@ function ThreeScene(
   this.clock = new THREE.Clock();
 }
 ThreeScene.prototype.render = function () {
+  // console.log(this.scene)
+  const _this=this
+  Object.entries(switchState).map((value)=>{
+    if(value[1]){
+      const meshName='mesh'+value[0]
+      let meshIndex
+      const meshVisible=_this.scene.children.map((value,index)=>{
+        if (value.name==meshName){
+          meshIndex=index
+          return true
+        }else{
+          meshIndex=index
+          return false
+        }
+      })
+      if(!meshVisible){
+        this.scene.remove(this.scene.children[meshIndex])
+      }
+    }
+  })
   //获取时间差
   const elta = this.clock.getDelta();
   this.controls.update(elta);
@@ -137,9 +157,19 @@ MainScene.prototype.loadGLTF = function () {
       ? "/api/react/Model.gltf"
       : "http://103.118.40.123:9999/react/Model.gltf";
   const _this = this;
+  this.mesh = [];
   this.gltfLoader.load(url, function (gltf) {
-    _this.scene.add(gltf.scene);
-    _this.render();
+    gltf.scene.traverse(function (child) {
+      if (child.isMesh) {
+        _this.mesh.push(child);
+        
+        // _this.scene.add(child)
+      }
+    });
+    _this.mesh.map((value)=>{
+      _this.scene.add(value)
+    })
+    // _this.scene.add(gltf.scene)
   });
 };
 
@@ -233,6 +263,7 @@ const mainScene = new MainScene(
   "main-wrap"
 );
 mainScene.loadGLTF();
+mainScene.render();
 const axisScene = new AxisScene(
   { x: 30, y: 50, z: 100 },
   new THREE.PointLight(0xffffff, 1),
