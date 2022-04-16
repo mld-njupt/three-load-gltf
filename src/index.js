@@ -37,13 +37,13 @@ let _switchState = {
   25: true,
   26: true,
   27: true,
-  all: false,
 };
 let switchState = new Proxy(_switchState, {
   set(obj, key, value) {
     obj[key] = value;
     if (mainScene) {
-      mainScene.render();
+      // console.log("xxx")
+      mainScene.render(key,value);
     }
 
     return true;
@@ -103,27 +103,17 @@ function ThreeScene(
   this.controls = new OrbitControls(this.camera, this.renderer.domElement);
   this.clock = new THREE.Clock();
 }
-ThreeScene.prototype.render = function () {
-  // console.log(this.scene)
-  const _this=this
-  Object.entries(switchState).map((value)=>{
-    if(value[1]){
-      const meshName='mesh'+value[0]
-      let meshIndex
-      const meshVisible=_this.scene.children.map((value,index)=>{
-        if (value.name==meshName){
-          meshIndex=index
-          return true
-        }else{
-          meshIndex=index
-          return false
-        }
-      })
-      if(!meshVisible){
-        this.scene.remove(this.scene.children[meshIndex])
-      }
+ThreeScene.prototype.render = function (...args) {
+  if(args.length>1){
+    const meshIndex=args[0]
+    const meshVisible=args[1]
+    if(!meshVisible){
+      this.mesh[meshIndex]&&this.scene.remove(this.mesh[meshIndex])
+    }else{
+      this.mesh[meshIndex]&&this.scene.add(this.mesh[meshIndex])
     }
-  })
+
+  }
   //获取时间差
   const elta = this.clock.getDelta();
   this.controls.update(elta);
